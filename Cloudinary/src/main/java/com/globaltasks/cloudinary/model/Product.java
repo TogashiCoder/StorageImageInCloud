@@ -1,12 +1,12 @@
 package com.globaltasks.cloudinary.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
 
 @Setter
 @Getter
@@ -20,7 +20,6 @@ public class Product {
     private String name;
     private Integer price;
     private Integer discount;
-    private String ImageUrl;
-    private String cloudinaryImageId;
-
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Image> images;
 }

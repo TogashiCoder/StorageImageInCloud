@@ -13,42 +13,35 @@ import java.util.regex.Pattern;
 @UtilityClass
 public class FileUploadUtil {
 
-    public static final long MAX_FILE_SIZE = 2 * 1024 * 1024;
+    public static final long MAX_FILE_SIZE = 5 * 1024 * 1024;
 
-    public static final String IMAGE_PATTERN = "([^\\s]+(\\.(?i)(jpg|png|gif|bmp))$)";
+    public static final String IMAGE_PATTERN = "([^\\s]+(\\.(?i)(jpg|jpeg|png|gif|bmp|tif|webp|svg))$)";
 
     public static final String DATE_FORMAT = "yyyyMMddHHmmss";
 
     public static final String UPLOAD_DIR = "upload";
-    public static final String  FILE_NAME_FORMAT= "%s_%s";
-    //public static final String  FILE_NAME_FORMAT= "%s_%s_%s";
-    public static final boolean isAllowedExtension(final String fileName,final String pattern) {
-        final Matcher matcher = Pattern.compile(pattern,Pattern.CASE_INSENSITIVE).matcher(fileName);
-        return fileName.matches(pattern);
-    }
+    public static final String FILE_NAME_FORMAT = "%s_%s";
 
+    public static boolean isAllowedExtension(final String fileName, final String pattern) {
+        final Matcher matcher = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE).matcher(fileName);
+        return matcher.matches();
+    }
 
     public static void assertAllowed(MultipartFile file, String pattern) {
         final long size = file.getSize();
         if (size > MAX_FILE_SIZE) {
-            throw new FuncErrorException("Max file size is 2MB");
+            throw new FuncErrorException("Max file size is 5MB");
         }
 
         final String fileName = file.getOriginalFilename();
-        final String extension = FilenameUtils.getExtension(fileName);
         if (!isAllowedExtension(fileName, pattern)) {
-            throw new FuncErrorException("Only jpg, png, gif, bmp files are allowed");
+            throw new FuncErrorException("Only allowed file types are: jpg, jpeg, png, gif, bmp, tif, webp, svg");
         }
     }
-
 
     public static String getFileName(final String name) {
         final DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
         final String date = dateFormat.format(System.currentTimeMillis());
         return String.format(FILE_NAME_FORMAT, name, date);
     }
-
-
-
-
 }

@@ -2,6 +2,7 @@ package com.globaltasks.cloudinary.service;
 
 import com.globaltasks.cloudinary.dto.responce.CloudinaryResponse;
 import com.globaltasks.cloudinary.exception.NotFoundException;
+import com.globaltasks.cloudinary.model.Image;
 import com.globaltasks.cloudinary.model.Product;
 import com.globaltasks.cloudinary.repository.ProductRepository;
 import com.globaltasks.cloudinary.util.FileUploadUtil;
@@ -9,6 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.ArrayList;
+import java.util.List;
+
 
 @Service
 public class ProductService {
@@ -18,29 +23,24 @@ public class ProductService {
     @Autowired
     private ProductRepository repository;
 
-
-
-
     @Transactional
-    public Product createProduct(Product product) {
+    public Product createProductWithImages(Product product, List<MultipartFile> images) {
+        List<Image> imageList = new ArrayList<>();
+
+        for (MultipartFile file : images) {
+            FileUploadUtil.assertAllowed(file, FileUploadUtil.IMAGE_PATTERN);
+            String fileName = FileUploadUtil.getFileName(file.getOriginalFilename());
+            CloudinaryResponse response = cloudinaryService.uploadFile(file, fileName);
+
+            Image image = new Image();
+            image.setImageUrl(response.getUrl());
+            image.setCloudinaryImageId(response.getPublicId());
+            image.setProduct(product);
+
+            imageList.add(image);
+        }
+
+        product.setImages(imageList);
         return repository.save(product);
     }
-
-
-
-
-    @Transactional
-    public void uploadImage (final Integer id, final MultipartFile file)
-    {
-        final Product product = this.repository.findById(id)
-                .orElseThrow(()->new NotFoundException("Product not found"));
-        FileUploadUtil.assertAllowed (file, FileUploadUtil.IMAGE_PATTERN);
-        final String fileName = FileUploadUtil.getFileName (file.getOriginalFilename());
-        final CloudinaryResponse response = this.cloudinaryService. uploadFile(file, fileName);
-        product.setImageUrl(response.getUrl());
-        product.setCloudinaryImageId(response.getPublicId());
-        this.repository.save(product);
-    }
-
-
 }
