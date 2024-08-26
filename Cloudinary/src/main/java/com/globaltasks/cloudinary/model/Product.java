@@ -22,4 +22,5 @@ public class Product {
     private Integer discount;
     private String ImageUrl;
     private String cloudinaryImageId;
+
 }
