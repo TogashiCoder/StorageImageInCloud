@@ -2,7 +2,6 @@ package com.globaltasks.cloudinary.util;
 
 import com.globaltasks.cloudinary.exception.FuncErrorException;
 import lombok.experimental.UtilityClass;
-import org.apache.commons.io.FilenameUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.text.DateFormat;
@@ -16,6 +15,7 @@ public class FileUploadUtil {
     public static final long MAX_FILE_SIZE = 5 * 1024 * 1024;
 
     public static final String IMAGE_PATTERN = "([^\\s]+(\\.(?i)(jpg|jpeg|png|gif|bmp|tif|webp|svg))$)";
+    public static final String VIDEO_PATTERN = ".*\\.(mp4|avi|mov|mkv|webm)$";
 
     public static final String DATE_FORMAT = "yyyyMMddHHmmss";
 
@@ -24,7 +24,9 @@ public class FileUploadUtil {
 
     public static boolean isAllowedExtension(final String fileName, final String pattern) {
         final Matcher matcher = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE).matcher(fileName);
-        return matcher.matches();
+        boolean matches = matcher.matches();
+        System.out.println("Filename: " + fileName + ", Pattern: " + pattern + ", Matches: " + matches);
+        return matches;
     }
 
     public static void assertAllowed(MultipartFile file, String pattern) {
@@ -34,8 +36,9 @@ public class FileUploadUtil {
         }
 
         final String fileName = file.getOriginalFilename();
+        System.out.println("Filename being checked: " + fileName);
         if (!isAllowedExtension(fileName, pattern)) {
-            throw new FuncErrorException("Only allowed file types are: jpg, jpeg, png, gif, bmp, tif, webp, svg");
+            throw new FuncErrorException("Only allowed file types are: " + pattern);
         }
     }
 

@@ -22,4 +22,6 @@ public class Product {
     private Integer discount;
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Image> images;
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Video> videos;
 }

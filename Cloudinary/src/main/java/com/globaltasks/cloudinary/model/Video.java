@@ -11,12 +11,14 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Image {
+public class Video {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private String imageUrl;
-    private String cloudinaryImageId;
+
+    private String videoUrl;
+    private String cloudinaryVideoId;
+
     @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;
